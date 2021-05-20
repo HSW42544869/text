@@ -8,12 +8,15 @@ public class TankMove : MonoBehaviour {
 	public float towerSpeed = 1;
 	public float barrelSpeed = 1;
 	public float maxAngle = 25;
-	public float mainAngle = -5;
+	public float minAngle = -5;
 
 	public Transform tower;
 	public Transform barrel;
 	private float angle;
 
+	public Renderer tracKL;
+	public Renderer tracKR;
+	public float trackSpeed = 0.02f;
 	// Use this for initialization
 	void Start () {
 	
@@ -30,11 +33,19 @@ public class TankMove : MonoBehaviour {
 		var x = Input.GetAxis("Mouse X");
 		tower.Rotate(0, 0, towerSpeed * x);
 
-		angle += Input.GetAxis("Mouse ScorrWheel") * barrelSpeed; 
+		angle += Input.GetAxis("Mouse ScrollWheel") * barrelSpeed;//抓取滑鼠滾輪
+		angle = Mathf.Clamp(angle, minAngle, maxAngle);
 
-		angle += Input.GetAxis("Mouse ScrollWheel") * barrelSpeed;
-		Vector3 barrelAngle = barrel.localEulerAngles; //滑鼠滾輪
+		Vector3 barrelAngle = barrel.localEulerAngles; //直接改變砲塔基座旋轉角度
 		barrelAngle.x = angle;
 		barrel.localEulerAngles = barrelAngle;
+
+		Vector2 trackLOffset = tracKL.material.mainTextureOffset;
+		trackLOffset.x += v != 0 ? trackSpeed * v : trackSpeed * h;
+		tracKL.material.mainTextureOffset = trackLOffset;
+
+		Vector2 trackROffset = tracKR.material.mainTextureOffset;
+		trackROffset.x += v != 0 ? trackSpeed * v : trackSpeed * -h;
+		tracKR.material.mainTextureOffset = trackROffset;
 	}
 }
